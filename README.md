@@ -1,7 +1,9 @@
-# Plaza Mini Serpong Service Tracker
+# Plaza Mini Serpong Service Tracker 🛠️🚘
 
-## 1. Ringkasan Proyek
+## 1. Ringkasan Proyek 📝
 Proyek ini adalah prototype halaman web mobile-friendly agar pelanggan Plaza Mini Serpong dapat mengecek status servis kendaraannya. Untuk MVP, data status menggunakan Google Sheets yang sudah dipakai sebagai sumber data; staf memperbarui status langsung di spreadsheet, bukan melalui panel admin baru.
+
+Arah pengembangan aplikasi berfokus pada tampilan mobile, baik dari android maupun iOS. Untuk tahapan awal dimulai pengembangan pada android terlebih dahulu dengan bahasa Kotlin dan akan dilanjutkan pengembangan aplikasi iOS dengan bahasa Swift
 
 ## 2. Tujuan Proyek
 - Memudahkan pelanggan mengecek status servis secara mandiri
