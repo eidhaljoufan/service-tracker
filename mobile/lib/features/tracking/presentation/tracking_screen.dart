@@ -423,7 +423,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
   }
 
   // ==========================================
-  // RESULT VIEW (Matching Reference Image 2)
+  // RESULT VIEW (Matching Spreadsheet Database Columns)
   // ==========================================
   Widget _buildResultView() {
     final order = _orders.first;
@@ -490,9 +490,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 Text(
                   order.customerName!,
                   style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFFE0E0E0),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -527,12 +527,12 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 ],
               ),
 
-              if (order.model.isNotEmpty) ...[
+              if (order.timeIn != null && order.timeIn!.isNotEmpty) ...[
                 const SizedBox(height: 10),
                 Text(
-                  order.model,
+                  'Jam Masuk: ${order.timeIn}',
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: Color(0xFFB0B0B0),
                     fontWeight: FontWeight.w500,
                   ),
@@ -606,9 +606,13 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
               const SizedBox(height: 14),
 
-              // Detail Cards
-              if (order.model.isNotEmpty) ...[
-                _buildDetailCard(label: 'Model kendaraan', value: order.model),
+              // Detail Cards matching Spreadsheet Columns
+              if (order.customerName != null &&
+                  order.customerName!.isNotEmpty) ...[
+                _buildDetailCard(
+                  label: 'Nama Pelanggan',
+                  value: order.customerName!,
+                ),
                 const SizedBox(height: 10),
               ],
 
@@ -641,19 +645,43 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 ],
               ),
 
-              if (order.handoverDate != null &&
-                  order.handoverDate!.isNotEmpty) ...[
+              // 2-Column Row for Jam Masuk & Nama Teknisi
+              if ((order.timeIn != null && order.timeIn!.isNotEmpty) ||
+                  (order.technician != null && order.technician!.isNotEmpty)) ...[
                 const SizedBox(height: 10),
-                _buildDetailCard(
-                  label: 'Tanggal penyerahan',
-                  value: order.handoverDate!,
+                Row(
+                  children: [
+                    if (order.timeIn != null && order.timeIn!.isNotEmpty)
+                      Expanded(
+                        child: _buildDetailCard(
+                          label: 'Jam masuk',
+                          value: order.timeIn!,
+                        ),
+                      ),
+                    if (order.timeIn != null &&
+                        order.timeIn!.isNotEmpty &&
+                        order.technician != null &&
+                        order.technician!.isNotEmpty)
+                      const SizedBox(width: 10),
+                    if (order.technician != null &&
+                        order.technician!.isNotEmpty)
+                      Expanded(
+                        child: _buildDetailCard(
+                          label: 'Nama teknisi',
+                          value: order.technician!,
+                        ),
+                      ),
+                  ],
                 ),
               ],
 
               if (order.customerNotes != null &&
                   order.customerNotes!.isNotEmpty) ...[
                 const SizedBox(height: 10),
-                _buildDetailCard(label: 'Catatan', value: order.customerNotes!),
+                _buildDetailCard(
+                  label: 'Catatan Tambahan',
+                  value: order.customerNotes!,
+                ),
               ],
 
               const SizedBox(height: 20),

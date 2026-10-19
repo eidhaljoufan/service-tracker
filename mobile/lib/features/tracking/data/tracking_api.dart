@@ -28,7 +28,7 @@ class TrackingApi {
       throw const TrackingApiException('API URL belum dikonfigurasi.');
     }
 
-    http.Response? response;
+    Map<String, dynamic>? payload;
 
     // Strategy 1: Try POST request (for doPost in Google Apps Script)
     try {
@@ -40,6 +40,8 @@ class TrackingApi {
           )
           .timeout(const Duration(seconds: 15));
 
+      http.Response targetResponse = initialResponse;
+
       if (initialResponse.statusCode >= 300 &&
           initialResponse.statusCode < 400) {
         final location = initialResponse.headers['location'];
@@ -50,22 +52,25 @@ class TrackingApi {
               'Akses Google Apps Script belum dibuka. Pastikan setelan Akses (Who has access) di Google Apps Script diatur ke "Siapa saja" (Anyone).',
             );
           }
-          // Google Apps Script redirects POST results to script.googleusercontent.com,
-          // which MUST be fetched via GET (POST to redirected URL returns HTTP 405).
-          response = await _client
+          targetResponse = await _client
               .get(uri.resolve(location))
               .timeout(const Duration(seconds: 15));
         }
-      } else if (initialResponse.statusCode == 200) {
-        response = initialResponse;
+      }
+
+      if (targetResponse.statusCode == 200) {
+        final decoded = jsonDecode(targetResponse.body);
+        if (decoded is Map<String, dynamic>) {
+          payload = decoded;
+        }
       }
     } catch (e) {
       if (e is TrackingApiException) rethrow;
       // Fall through to Strategy 2
     }
 
-    // Strategy 2: Fallback to GET request with query parameters (for doGet in Google Apps Script)
-    if (response == null || response.statusCode != 200) {
+    // Strategy 2: If Strategy 1 didn't yield a valid JSON payload, try GET with query parameters (for doGet)
+    if (payload == null) {
       try {
         final queryUri = uri.replace(
           queryParameters: {
@@ -74,29 +79,31 @@ class TrackingApi {
             'phoneLast4': phoneLast4,
           },
         );
-        response = await _client
+        final getResponse = await _client
             .get(queryUri)
             .timeout(const Duration(seconds: 15));
+
+        if (getResponse.statusCode == 200) {
+          final decoded = jsonDecode(getResponse.body);
+          if (decoded is Map<String, dynamic>) {
+            payload = decoded;
+          }
+        }
       } on TimeoutException {
         throw const TrackingApiException(
           'Permintaan timeout. Periksa koneksi Anda.',
         );
       } on http.ClientException {
         throw const TrackingApiException('Gagal terhubung ke server.');
+      } catch (_) {
+        // Fall through
       }
     }
 
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw TrackingApiException(
-        'Layanan bermasalah (HTTP ${response.statusCode}).',
+    if (payload == null) {
+      throw const TrackingApiException(
+        'Format respons server tidak valid. Pastikan Google Apps Script mengembalikan JSON.',
       );
-    }
-
-    late final Map<String, dynamic> payload;
-    try {
-      payload = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (_) {
-      throw const TrackingApiException('Format respons server tidak valid.');
     }
 
     if (payload['ok'] != true) {

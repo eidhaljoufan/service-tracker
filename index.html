@@ -4,6 +4,7 @@
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Plaza Mini Serpong · Service Tracker</title>
+            <link rel="icon" type="image/jpg" href="car-service.png">
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
             <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -158,7 +159,7 @@
 
 <script>
   // === KONFIGURASI ===
-  const API_URL = "https://script.google.com/macros/s/AKfycbwSYW4HPyci0Nyg42oAx6hqpr7xM3zgcnVt9l1QuelEHlWigmTOJGyF-SVPGO14AHxq/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbzbO9iu56LocYsrJszoYys_hf_qAitaTCxF4jJUDc7a4jnbQBxnwMchneLNsMpSVj79cw/exec";
   // Isi nomor WhatsApp service advisor (format 628xxxxxxxxxx). Kosong = tombol chat disembunyikan.
   const WA_NUMBER = "6285810042115";
 
@@ -253,7 +254,8 @@
     $('stepsPanel').classList.toggle('hidden', !known);
     if(known){
       $('steps').innerHTML = STAGES.map((s,i)=>{
-        const done = i<st || (i===st && st===4), cur = i===st && st!==4;
+        const done = i < st || (i === st && st === STAGES.length - 1);
+        const cur = i === st && st !== STAGES.length - 1;
         let cs = done ? 'background:#16181B;color:#fff' : cur ? `background:${th.dot};color:#fff;box-shadow:0 0 0 5px ${th.bg}` : 'background:#fff;color:#8A8E95;border:1.5px solid #D6D2C9';
         const ls = i===STAGES.length-1 ? 'display:none' : `background:${i<st?'#16181B':'#E2DED6'}`;
         const ls2 = done||cur ? 'font-weight:'+(cur?700:600) : 'font-weight:500;color:#8A8E95';
@@ -265,18 +267,17 @@
 
     // detail: hanya field yang tersedia dari spreadsheet
     const cells = [
-        ['Tanggal masuk', o.arrivalDate],
         ['Jam masuk', o.arrivalTime],
-        ['Model kendaraan', o.model],
         ['Keluhan / jenis pekerjaan', o.issue, true],
         ['Status pengerjaan', o.status],
         ['Estimasi selesai', o.estimate],
-        ['Tanggal penyerahan', o.handoverDate],
         ['Catatan tambahan', o.customerNotes, true]
-        ].filter(c => c[1]);
+        ].filter(cell => cell[1]);
 
         $('grid').innerHTML = cells
-        .map(c => `<div class="cell ${c[2] ? 'wide' : ''}"><span>${c[0]}</span><b>${esc(c[1])}</b></div>`)
+        .map(cell =>
+            `<div class="cell ${cell[2] ? 'wide' : ''}"><span>${cell[0]}</span><b>${esc(cell[1])}</b></div>`
+        )
         .join('');
 
     const chat=$('chat');

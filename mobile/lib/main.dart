@@ -4,7 +4,7 @@ import 'features/tracking/data/tracking_api.dart';
 import 'features/tracking/presentation/tracking_screen.dart';
 
 const String kDefaultApiUrl =
-    'https://script.google.com/macros/s/AKfycbwSYW4HPyci0Nyg42oAx6hqpr7xM3zgcnVt9l1QuelEHlWigmTOJGyF-SVPGO14AHxq/exec';
+    'https://script.google.com/macros/s/AKfycbzbO9iu56LocYsrJszoYys_hf_qAitaTCxF4jJUDc7a4jnbQBxnwMchneLNsMpSVj79cw/exec';
 
 void main() {
   runApp(const ServiceTrackerApp());
