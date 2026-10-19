@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+    <html lang="id">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Plaza Mini Serpong · Service Tracker</title>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+            <style>
+            :root{--ink:#16181B;--paper:#F3F1EC;--muted:#5B5F66;--line:#E2DED6}
+            *{box-sizing:border-box;margin:0;padding:0}
+            body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center}
+            .app{width:100%;max-width:430px;min-height:100vh;background:var(--paper);position:relative}
+            .hidden{display:none!important}
+            .brand{font-family:'Archivo',sans-serif;font-stretch:80%;font-weight:800;letter-spacing:.14em}
+            button{font-family:inherit;cursor:pointer}
+
+            /* Lookup */
+            .hero{background:var(--ink);color:var(--paper);padding:40px 24px 72px;display:flex;flex-direction:column;gap:28px}
+            .hero-top{display:flex;justify-content:space-between;align-items:center}
+            .hero-top .brand{font-size:15px}.hero-top span{font-size:12px;color:#B9BCC2}
+            .hero h1{font-family:'Archivo',sans-serif;font-stretch:85%;font-weight:800;font-size:40px;line-height:1.02;margin-bottom:10px}
+            .hero p{font-size:15px;line-height:1.5;color:#C9CCD1}
+            .form-card{margin:-44px 16px 0;background:#fff;border-radius:18px;padding:22px 20px;display:flex;flex-direction:column;gap:16px;box-shadow:0 10px 30px rgba(22,24,27,.08)}
+            .field{display:flex;flex-direction:column;gap:6px}
+            .field label{font-size:13px;font-weight:600}
+            .field input{height:52px;border:1.5px solid #D6D2C9;border-radius:12px;padding:0 14px;font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--ink);background:#FAF9F6}
+            #plate{letter-spacing:.06em;text-transform:uppercase}
+            #phone{letter-spacing:.3em}
+            .field input:focus{outline:2px solid var(--ink);outline-offset:1px}
+            .hint{font-size:12px;color:var(--muted)}
+            .err{background:#FDECEA;color:#8A1C12;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.4}
+            .btn-main{height:54px;border:none;border-radius:12px;background:var(--ink);color:#fff;font-family:'Archivo',sans-serif;font-weight:700;font-size:17px;letter-spacing:.02em}
+            .btn-main:disabled{opacity:.6;cursor:wait}
+            .how{padding:24px 20px 32px;display:flex;flex-direction:column;gap:10px}
+            .how-title{font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+            .how li{list-style:none;font-size:13px;color:var(--muted);line-height:1.5;display:flex;gap:10px}
+            .how li b{font-family:'IBM Plex Mono',monospace;color:var(--ink)}
+
+            /* Detail */
+            .d-head{background:var(--ink);color:var(--paper);padding:20px 20px 84px;display:flex;flex-direction:column;gap:22px}
+            .d-top{display:flex;align-items:center;gap:12px}
+            .back{width:44px;height:44px;border-radius:12px;border:1px solid #3A3D42;background:transparent;color:var(--paper);display:flex;align-items:center;justify-content:center}
+            .d-top .brand{font-size:13px}.d-top small{display:block;font-size:12px;color:#B9BCC2}
+            .d-id{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+            .customer-name { margin: 0 0 8px; color: #B9BCC2; font-size: 14px;font-weight: 600;
+            }
+            .plate-badge{display:inline-block;background:#fff;color:var(--ink);border-radius:8px;padding:6px 12px;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:22px;letter-spacing:.06em;border:2px solid var(--paper);box-shadow:inset 0 0 0 2px var(--ink)}
+            .d-model{font-size:15px;color:#E4E6E9;margin-top:8px}
+            .pct{text-align:right}.pct b{display:block;font-family:'Archivo',sans-serif;font-weight:800;font-size:34px;line-height:1}.pct span{font-size:12px;color:#B9BCC2}
+            .switcher{margin:-60px 16px 10px;position:relative;display:flex;gap:8px;overflow-x:auto}
+            .switcher button{flex:none;border:1px solid #3A3D42;background:var(--ink);color:#fff;border-radius:99px;padding:8px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600}
+            .switcher button.on{background:#fff;color:var(--ink)}
+            .status-card{margin:-60px 16px 0;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:10px;position:relative}
+            .switcher:not(.hidden)+.status-card{margin-top:0}
+            .st-row{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.08em}
+            .dot{width:10px;height:10px;border-radius:99px}
+            .st-label{font-family:'Archivo',sans-serif;font-stretch:90%;font-weight:800;font-size:28px;line-height:1.05}
+            .st-desc{font-size:14px;line-height:1.45}
+            .bar{height:8px;border-radius:99px;background:rgba(22,24,27,.1);overflow:hidden}.bar i{display:block;height:100%;border-radius:99px;transition:width .6s}
+            .panel{margin:16px 16px 0;background:#fff;border-radius:18px;padding:18px 18px 6px}
+            .panel-title{font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--muted);margin-bottom:12px}
+            .step{display:flex;gap:14px}
+            .rail{display:flex;flex-direction:column;align-items:center;width:28px}
+            .circle{width:28px;height:28px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex:none}
+            .line{width:2px;flex-grow:1;min-height:18px;margin:4px 0}
+            .step-body{padding:3px 0 16px;display:flex;flex-direction:column;gap:2px}
+            .step-label{font-size:15px}.step-note{font-size:12px;color:var(--muted)}
+            .grid{margin:16px 16px 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+            .cell{background:#fff;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:4px}
+            .cell span{font-size:12px;color:var(--muted)}.cell b{font-weight:600;font-size:15px;word-break:break-word}
+            .cell.wide{grid-column:1/-1}
+            .actions{margin:18px 16px 28px;display:flex;flex-direction:column;gap:10px}
+            .btn-chat{height:54px;border-radius:12px;background:var(--ink);color:#fff;font-family:'Archivo',sans-serif;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+            .foot{text-align:center;font-size:12px;color:var(--muted)}
+            </style>
+        </head>
+    <body>
+        <div class="app">
+
+        <!-- LOOKUP -->
+        <section id="lookup">
+            <div class="hero">
+            <div class="hero-top"><div class="brand">PLAZA MINI SERPONG</div><span>Service Tracker</span></div>
+            <div>
+                <h1>Cek Status Servis Kendaraan Anda!</h1>
+                <p>Cek progres servis secara langsung, tanpa perlu telepon bengkel.</p>
+            </div>
+            </div>
+            <form class="form-card" id="form" autocomplete="off">
+            <div class="field">
+                <label for="plate">Nomor Polisi</label>
+                <input id="plate" placeholder="contoh: B 1286 NZT" required>
+            </div>
+            <div class="field">
+                <label for="phone">4 digit terakhir No. HP</label>
+                <input id="phone" placeholder="••••" inputmode="numeric" maxlength="4" pattern="\d{4}" required>
+                <div class="hint">Untuk verifikasi, supaya data servis hanya bisa dilihat pemilik.</div>
+            </div>
+            <div id="err" class="err hidden"></div>
+            <button class="btn-main" id="submit" type="submit">Lacak Status</button>
+            </form>
+            <div class="how">
+            <div class="how-title">CARA KERJA</div>
+            <ul>
+                <li><b>1</b> Masukkan nomor polisi dan 4 digit akhir HP yang terdaftar.</li>
+                <li><b>2</b> Lihat tahap servis kendaraan Anda secara real-time.</li>
+                <li><b>3</b> Hubungi service advisor bila perlu informasi lanjut.</li>
+            </ul>
+            </div>
+        </section>
+
+        <!-- DETAIL -->
+        <section id="detail" class="hidden">
+            <div class="d-head">
+                <div class="d-top">
+                    <button class="back" id="back" aria-label="Kembali">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <div><div class="brand">PLAZA MINI SERPONG</div><small>Status servis kendaraan</small></div>
+                </div>
+
+                <div class="d-id">
+                <div class="vehicle-info">
+                    <div class="customer-name" id="d-customer"></div>
+                    <div class="plate-badge" id="d-plate"></div>
+                    <div class="d-model" id="d-model"></div>
+                </div>
+
+                <div class="pct" id="d-pct">
+                    <b></b>
+                    <span>progres</span>
+                </div>
+                </div>
+                            </div>
+            <div class="switcher hidden" id="switcher"></div>
+            <div class="status-card" id="statusCard">
+            <div class="st-row"><span class="dot" id="dot"></span><span id="stageNo"></span></div>
+            <div class="st-label" id="stLabel"></div>
+            <div class="st-desc" id="stDesc"></div>
+            <div class="bar" id="barWrap"><i id="bar"></i></div>
+            </div>
+            <div class="panel" id="stepsPanel">
+            <div class="panel-title">PERJALANAN SERVIS</div>
+            <div id="steps"></div>
+            </div>
+            <div class="grid" id="grid"></div>
+            <div class="actions">
+            <a class="btn-chat hidden" id="chat" target="_blank" rel="noopener">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-5A8 8 0 1 1 21 12z"/></svg>
+                Chat Service Advisor
+            </a>
+            <div class="foot">Status diperbarui oleh tim workshop</div>
+            </div>
+        </section>
+        </div>
+
+<script>
+  // === KONFIGURASI ===
+  const API_URL = "https://script.google.com/macros/s/AKfycbwSYW4HPyci0Nyg42oAx6hqpr7xM3zgcnVt9l1QuelEHlWigmTOJGyF-SVPGO14AHxq/exec";
+  // Isi nomor WhatsApp service advisor (format 628xxxxxxxxxx). Kosong = tombol chat disembunyikan.
+  const WA_NUMBER = "6285810042115";
+
+  const STAGES = [
+    { label: 'Reception', desc: 'Kendaraan sudah diterima oleh bengkel.' },
+    { label: 'Repair / Service', desc: 'Pekerjaan servis atau perbaikan sedang dilakukan.' },
+    { label: 'Waiting Approval', desc: 'Pekerjaan menunggu persetujuan.' },
+    { label: 'Waiting Parts', desc: 'Pekerjaan menunggu ketersediaan suku cadang.' },
+    { label: 'QC / Final Inspection', desc: 'Kendaraan sedang menjalani pemeriksaan akhir.' },
+    { label: 'Washing', desc: 'Kendaraan sedang dibersihkan.' },
+    { label: 'Ready for Delivery', desc: 'Kendaraan siap diserahkan kepada pelanggan.' }
+    ];
+
+    const THEMES = [
+    { bg: '#FCE7E5', fg: '#8A1C12', dot: '#D8483E' }, // Reception
+    { bg: '#FFF1D6', fg: '#6B4200', dot: '#D98E04' }, // Repair / Service
+    { bg: '#F5E5D8', fg: '#75421D', dot: '#A96025' }, // Waiting Approval
+    { bg: '#EEE5D4', fg: '#514027', dot: '#80652E' }, // Waiting Parts
+    { bg: '#FCE5E5', fg: '#8F1111', dot: '#C62828' }, // QC / Final Inspection
+    { bg: '#E3EDFA', fg: '#17467F', dot: '#2F6FC0' }, // Washing
+    { bg: '#DDF1E5', fg: '#11502F', dot: '#1F8A50' }  // Ready for Delivery
+    ];
+
+    const PCTS = [10, 25, 40, 50, 70, 85, 100];
+
+    function stageOf(status) {
+    const normalizedStatus = String(status || '').trim().toLowerCase();
+    return STAGES.findIndex(stage =>
+        stage.label.toLowerCase() === normalizedStatus
+    );
+    }
+
+    const $ = id => document.getElementById(id);
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+    }[char]));
+  let matches = [], sel = 0;
+
+  function showErr(msg){ const e=$('err'); e.textContent=msg; e.classList.toggle('hidden',!msg); }
+
+  $('plate').addEventListener('input', e=>{ e.target.value=e.target.value.toUpperCase(); showErr(''); });
+  $('phone').addEventListener('input', e=>{ e.target.value=e.target.value.replace(/\D/g,'').slice(0,4); showErr(''); });
+
+  $('form').addEventListener('submit', async ev=>{
+    ev.preventDefault();
+    const plate=$('plate').value.trim().toUpperCase(), phoneLast4=$('phone').value.trim();
+    const btn=$('submit'); btn.disabled=true; btn.textContent='Mencari…'; showErr('');
+    try{
+      const res = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({plate,phoneLast4})});
+      const data = JSON.parse(await res.text());
+      if(!data.ok) return showErr(data.error || 'Data tidak ditemukan. Periksa lagi nomor polisi dan 4 digit terakhir nomor HP Anda.');
+      if(!data.matches || !data.matches.length) return showErr('Data tidak ditemukan. Periksa lagi nomor polisi dan 4 digit terakhir nomor HP Anda.');
+      matches = data.matches; sel = 0; render();
+      $('lookup').classList.add('hidden'); $('detail').classList.remove('hidden'); window.scrollTo(0,0);
+    }catch(e){
+      console.error(e); showErr('Gagal terhubung ke server. Coba lagi beberapa saat.');
+    }finally{ btn.disabled=false; btn.textContent='Lacak Status'; }
+  });
+
+  $('back').addEventListener('click',()=>{ $('detail').classList.add('hidden'); $('lookup').classList.remove('hidden'); window.scrollTo(0,0); });
+
+  function render(){
+    const o = matches[sel];
+    const st = stageOf(o.status), known = st>=0;
+    const th = known ? THEMES[st] : {bg:'#E9E6DE',fg:'#16181B',dot:'#5B5F66'};
+
+    $('d-customer').textContent = o.customerName || 'Pelanggan';
+    $('d-plate').textContent = o.plate || '-';
+    $('d-model').textContent = o.model || '';
+    $('d-pct').classList.toggle('hidden', !known);
+    $('d-pct').querySelector('b').textContent = known ? PCTS[st]+'%' : '';
+
+    // pilih kendaraan jika lebih dari satu hasil
+    const sw=$('switcher');
+    sw.classList.toggle('hidden', matches.length<2);
+    sw.innerHTML = matches.map((m,i)=>`<button data-i="${i}" class="${i===sel?'on':''}">${esc(m.plate)}${m.issue?' · '+esc(String(m.issue).slice(0,18)):''}</button>`).join('');
+    sw.querySelectorAll('button').forEach(b=>b.onclick=()=>{sel=+b.dataset.i;render();});
+
+    const sc=$('statusCard'); sc.style.background=th.bg; sc.style.color=th.fg;
+    $('dot').style.background=th.dot;
+    $('stageNo').textContent = known ? `TAHAP ${st + 1} DARI ${STAGES.length}` : 'STATUS TERKINI';
+    $('stLabel').textContent = o.status || 'Status belum tersedia';
+    $('stDesc').textContent  = known ? STAGES[st].desc : (o.customerNotes || 'Tim workshop sedang menangani kendaraan Anda.');
+    $('barWrap').classList.toggle('hidden', !known);
+    $('bar').style.background=th.dot; $('bar').style.width = known ? PCTS[st]+'%' : '0';
+
+    // stepper
+    $('stepsPanel').classList.toggle('hidden', !known);
+    if(known){
+      $('steps').innerHTML = STAGES.map((s,i)=>{
+        const done = i<st || (i===st && st===4), cur = i===st && st!==4;
+        let cs = done ? 'background:#16181B;color:#fff' : cur ? `background:${th.dot};color:#fff;box-shadow:0 0 0 5px ${th.bg}` : 'background:#fff;color:#8A8E95;border:1.5px solid #D6D2C9';
+        const ls = i===STAGES.length-1 ? 'display:none' : `background:${i<st?'#16181B':'#E2DED6'}`;
+        const ls2 = done||cur ? 'font-weight:'+(cur?700:600) : 'font-weight:500;color:#8A8E95';
+        const check = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+        return `<div class="step"><div class="rail"><div class="circle" style="${cs}">${done?check:i+1}</div><div class="line" style="${ls}"></div></div>
+          <div class="step-body"><div class="step-label" style="${ls2}">${s.label}</div><div class="step-note">${done?'Selesai':cur?'Sedang berlangsung':'Menunggu'}</div></div></div>`;
+      }).join('');
+    }
+
+    // detail: hanya field yang tersedia dari spreadsheet
+    const cells = [
+        ['Tanggal masuk', o.arrivalDate],
+        ['Jam masuk', o.arrivalTime],
+        ['Model kendaraan', o.model],
+        ['Keluhan / jenis pekerjaan', o.issue, true],
+        ['Status pengerjaan', o.status],
+        ['Estimasi selesai', o.estimate],
+        ['Tanggal penyerahan', o.handoverDate],
+        ['Catatan tambahan', o.customerNotes, true]
+        ].filter(c => c[1]);
+
+        $('grid').innerHTML = cells
+        .map(c => `<div class="cell ${c[2] ? 'wide' : ''}"><span>${c[0]}</span><b>${esc(c[1])}</b></div>`)
+        .join('');
+
+    const chat=$('chat');
+    if(WA_NUMBER){
+      chat.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('Halo, saya ingin menanyakan status servis '+(o.plate||''))}`;
+      chat.classList.remove('hidden');
+    }
+  }
+</script>
+</body>
+</html>
